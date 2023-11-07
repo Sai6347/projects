@@ -31,13 +31,26 @@ app.get("/getEmp", (req,res) => {
     })
 })
 
+app.get("/login", (req,res) => {
+    const q = "select * from employee where ( `mobile`, `password`) values (?)"
+    const values = [
+        req.body.mobile,
+        req.body.password
+    ];
+    db.query(q,[values], (err,data)=>{
+        if(err) return res.json(err)
+        return res.json("Logged In Successfully")
+    })
+})
+
 app.post("/addEmp", upload.single('file'), (req,res) => {
-    const q = "insert into employee (`name`,`mobile`,`role`,`file`) values (?)"
+    const q = "insert into employee (`name`,`mobile`,`role`,`file`,`password`) values (?)"
     const values = [
         req.body.name,
         req.body.mobile,
         req.body.role,
-        req.file.buffer
+        req.file.buffer,
+        req.body.password
     ];
     db.query(q,[values], (err,data) => {
         if(err) return res.json(err)
@@ -57,12 +70,13 @@ app.get("/getEmp/:id", (req, res) => {
 
 app.put("/editEmp/:id", upload.single('file'), (req, res) => {
     const empId = req.params.id;
-    const q = "update employee set `name`= ?, `mobile` = ?, `role` = ?, `file` = ? where id = ?";
+    const q = "update employee set `name`= ?, `mobile` = ?, `role` = ?, `file` = ?, `password` = ? where id = ?";
     const values = [
         req.body.name,
         req.body.mobile,
         req.body.role,
         req.file ? req.file.path : null,
+        req.body.password,
         empId
     ];
 
