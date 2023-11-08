@@ -70,15 +70,20 @@ app.get("/getEmp/:id", (req, res) => {
 
 app.put("/editEmp/:id", upload.single('file'), (req, res) => {
     const empId = req.params.id;
+    console.log("Before executing the SQL query");
     const q = "update employee set `name`= ?, `mobile` = ?, `role` = ?, `file` = ?, `password` = ? where id = ?";
     const values = [
         req.body.name,
         req.body.mobile,
         req.body.role,
-        req.file ? req.file.path : null,
+        req.file.buffer,
         req.body.password,
         empId
     ];
+
+    if (req.file) {
+        console.log("New file is Added");
+    }
 
     db.query(q, values, (err, data) => {
         if (err) return res.json(err);
